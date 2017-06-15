@@ -6,9 +6,6 @@ package com.dreamworld.followme;
 
 import android.graphics.Bitmap;
 
-/**
- * Created by Belal on 10/29/2015.
- */
 public class Config {
 
     public static String[] names;
