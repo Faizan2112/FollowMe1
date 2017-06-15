@@ -1,5 +1,6 @@
 package com.dreamworld.followme.usingglide;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import com.dreamworld.followme.CardAdapter;
 import com.dreamworld.followme.Config;
 import com.dreamworld.followme.GetBitmap;
 import com.dreamworld.followme.R;
+import com.dreamworld.followme.testcode.NetworkUtill;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,10 +38,29 @@ public class HomeActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-
-        fetchData();
+        getConnectivityStatusString(this);
+       // fetchData();
         //showData();
     }
+
+
+        public String getConnectivityStatusString(Context context) {
+            int conn = NetworkUtill.getConnectivityStatus(context);
+            String status = null;
+            if (conn == NetworkUtill.TYPE_WIFI) {
+                status = "Wifi enabled";
+                Toast.makeText(this,""+status,Toast.LENGTH_LONG ).show();
+            } else if (conn == NetworkUtill.TYPE_MOBILE) {
+                status = "Mobile data enabled";
+                Toast.makeText(this,""+status,Toast.LENGTH_LONG ).show();
+            } else if (conn == NetworkUtill.TYPE_NOT_CONNECTED) {
+                status = "Not connected to Internet";
+                Toast.makeText(this,""+status,Toast.LENGTH_LONG ).show();
+            }
+            return status;
+        }
+
+
 
     private void fetchData() {
         StringRequest lFetchData = new StringRequest(Request.Method.GET, ConfigFile.GET_URL, new Response.Listener<String>() {
