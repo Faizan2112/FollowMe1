@@ -50,9 +50,11 @@ public class HomeActivity extends AppCompatActivity {
             if (conn == NetworkUtill.TYPE_WIFI) {
                 status = "Wifi enabled";
                 Toast.makeText(this,""+status,Toast.LENGTH_LONG ).show();
+                fetchData();
             } else if (conn == NetworkUtill.TYPE_MOBILE) {
                 status = "Mobile data enabled";
                 Toast.makeText(this,""+status,Toast.LENGTH_LONG ).show();
+                fetchData();
             } else if (conn == NetworkUtill.TYPE_NOT_CONNECTED) {
                 status = "Not connected to Internet";
                 Toast.makeText(this,""+status,Toast.LENGTH_LONG ).show();

@@ -9,14 +9,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.FutureTarget;
 import com.dreamworld.followme.ListItem;
 import com.dreamworld.followme.R;
+import com.dreamworld.followme.glideutills.GlideCacheListener;
+import com.dreamworld.followme.glideutills.GlideUtils;
+import com.dreamworld.followme.glideutills.T.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import static android.widget.Toast.LENGTH_LONG;
 
 /**
  * Created by faizan on 12/06/2017.
@@ -76,13 +85,28 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
        Glide.with(mContext).load(String.valueOf(dm.getmUrls()))
               .thumbnail(0.5f)
               .crossFade()
-              .diskCacheStrategy(DiskCacheStrategy.ALL)
+              .diskCacheStrategy(DiskCacheStrategy.SOURCE)
               .into(holder.lHeadImage);
+
         Glide.with(mContext).load(String.valueOf(dm.getmUrls()))
-                .thumbnail(0.5f)
+                .placeholder(R.drawable.placeholder)
+                //.thumbnail(0.5f)
                 .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.lMainImage);
+                //.get();
+        GlideUtils.cacheImage(String.valueOf(dm.getmUrls()), mContext, new MyGlideCacheListener());
+        Glide.with(mContext).load(GlideUtils.getCache(mContext,String.valueOf(dm.getmUrls()) )).into(holder.lMainImage);
+  /*      FutureTarget<File> future = Glide.with(mContext)
+                .load(dm.getmUrls())
+                .downloadOnly(500, 500);
+        try {
+            File cacheFile = future.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }*/
     }
 
     @Override
@@ -100,6 +124,22 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             lMainImage = (ImageView)itemView.findViewById(R.id.home_main_image);
             lDate =(TextView)itemView.findViewById(R.id.main_date_time);
 
+        }
+    }
+
+    private class MyGlideCacheListener implements GlideCacheListener {
+
+        @Override
+        public void success(String path) {
+
+           // Toast.makeText(mContext,"sfsd" +path, LENGTH_LONG).show();
+            //S//(mActivity, "缓存成功");
+        }
+
+        @Override
+        public void error(Exception e) {
+           // S(mActivity, "缓存失败");
+            //Toast.makeText(mContext,"sfsd"+e, LENGTH_LONG).show();
         }
     }
 }
