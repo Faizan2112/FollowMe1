@@ -1,39 +1,35 @@
-package com.dreamworld.followme.usingglide;
+package com.dreamworld.followme.fetchcchedata;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.provider.ContactsContract;
-import android.view.LayoutInflater;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.FutureTarget;
-import com.dreamworld.followme.ListItem;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.dreamworld.followme.R;
 import com.dreamworld.followme.glideutills.GlideCacheListener;
 import com.dreamworld.followme.glideutills.GlideUtils;
-import com.dreamworld.followme.glideutills.T.*;
-import com.dreamworld.followme.testcode.NetworkUtill;
+import com.dreamworld.followme.usingglide.Datamodel;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-import static android.widget.Toast.LENGTH_LONG;
-import static com.bumptech.glide.util.ByteArrayPool.get;
+import static com.dreamworld.followme.glideutills.GlideHelper.urlToImageView;
 
 /**
  * Created by faizan on 12/06/2017.
  */
 
-public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
+public class DataAdapterCache extends RecyclerView.Adapter<DataAdapterCache.ViewHolder> {
 
     List<Datamodel> datamodels ;
     Context mContext ;
@@ -52,7 +48,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         }
     }*/
 
-  public DataAdapter(Context context, String[] name , String[] urls ,Bitmap[] images)
+  public DataAdapterCache(Context context, String[] name , String[] urls , Bitmap[] images)
   {
 
       super();
@@ -82,44 +78,35 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-            dm = datamodels.get(position);
-            // holder.lHeadImage.setImageBitmap(datamodels.get(position).getmUrls());
-            // holder.lDate.setText(dm.getmUrls());
-            // holder.textViewUrl.setText(list.getUrl());
-     /*  Glide.with(mContext).load(String.valueOf(dm.getmUrls()))
-              .thumbnail(0.5f)
-              .crossFade()
-               .transform(new CircleTransform(mContext))
-              //.diskCacheStrategy(DiskCacheStrategy.SOURCE)
-              .into(holder.lHeadImage);
+        dm = datamodels.get(position);
+        // holder.lHeadImage.setImageBitmap(datamodels.get(position).getmUrls());
+        // holder.lDate.setText(dm.getmUrls());
+        // holder.textViewUrl.setText(list.getUrl());
+         GlideUtils.cacheImage(String.valueOf(dm.getmUrls()), mContext, new MyGlideCacheListener());
+         Glide.with(mContext).load(GlideUtils.getCache(mContext, String.valueOf(dm.getmUrls()))).into(holder.lMainImage);
+      /*  Glide.with(mContext)
+                .load(Uri.parse(GlideUtils.getCache(mContext, String.valueOf(dm.getmUrls()))))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .dontAnimate()
+                .listener(new RequestListener<Uri, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, Uri model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource){
+                       *//* if (dialog.isShowing())
+                            dialog.dismiss();*//*
+                        return false;
+                    }
+                })
+                .into(holder.lMainImage);
+    }*/
 
-        Glide.with(mContext).load(String.valueOf(dm.getmUrls()))
-                .placeholder(R.drawable.placeholder)
-                //.thumbnail(0.5f)
-                .crossFade()
-                //.diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(holder.lMainImage)
 
-                ;*/
+            urlToImageView(mContext, holder.lMainImage, dm.getmUrls(), R.drawable.placeholder, false);
 
-
-            GlideUtils.cacheImage(String.valueOf(dm.getmUrls()), mContext, new MyGlideCacheListener());
-        Glide.with(mContext).load(GlideUtils.getCache(mContext, String.valueOf(dm.getmUrls()))).transform(new CircleTransform(mContext)).into(holder.lHeadImage);
-
-        Glide.with(mContext).load(GlideUtils.getCache(mContext, String.valueOf(dm.getmUrls()))).into(holder.lMainImage);
-
-            /*      FutureTarget<File> future = Glide.with(mContext)
-                .load(dm.getmUrls())
-                .downloadOnly(500, 500);
-        try {
-            File cacheFile = future.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }*/
     }
-
     @Override
     public int getItemCount() {
         return datamodels.size();

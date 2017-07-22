@@ -14,6 +14,8 @@ public class ConfigFile {
 
     // fetch data tags
     public static final String GET_URL = "http://faizandream21.000webhostapp.com/PhotoUploadWithText/getImage.php";
+    public static final String GET_URL_CACHE = "http://faizandream21.000webhostapp.com/PhotoUploadWithText/getImage.php";
+
     public static final String TAG_IMAGE_URL = "url";
     public static final String TAG_IMAGE_NAME = "name";
     public static final String TAG_JSON_ARRAY="result";

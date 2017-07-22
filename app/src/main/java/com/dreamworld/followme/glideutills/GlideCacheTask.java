@@ -55,7 +55,7 @@ public class GlideCacheTask extends AsyncTask<String, Void, File> {
             oldfile = null;
         }
         if (oldfile != null) {
-            //将缓存文件copy, 命名为图片格式文件
+
 //        copyFile(path, Environment.getExternalStorageDirectory().getAbsolutePath() + "/#gh/"+ Md5.getFileName(imgUrl));
 //        copyFile(path, context.getExternalCacheDir()+ Md5.getFileName(imgUrl));
             copyFile(oldfile.getAbsolutePath(), newfile.getAbsolutePath());
@@ -68,10 +68,6 @@ public class GlideCacheTask extends AsyncTask<String, Void, File> {
 
     }
 
-    /**
-     * oldPath: 图片缓存的路径
-     * newPath: 图片缓存copy的路径
-     */
     public void copyFile(String oldPath, String newPath) {
         try {
             int byteRead;
@@ -90,7 +86,7 @@ public class GlideCacheTask extends AsyncTask<String, Void, File> {
                 }
             } else {
                 if (listener != null) {
-                    listener.error(new NullPointerException("没有找到源文件"));
+                    listener.error(new NullPointerException("csdcsdcs"));
                 }
             }
 //            throw new RuntimeException();
@@ -98,8 +94,9 @@ public class GlideCacheTask extends AsyncTask<String, Void, File> {
         catch (Exception e) {
             if (listener != null) {
                 listener.error(e);
+
             }
-            System.out.println("复制文件操作出错");
+
             e.printStackTrace();
         }
     }
