@@ -2,6 +2,7 @@ package com.dreamworld.followme.usingglide;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -46,6 +47,7 @@ import java.util.concurrent.ExecutionException;
 
 public class HomeActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
+    ProgressDialog progress;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.Adapter mRecyclerViewAdapter;
     private ConfigFile mConfigFile;
@@ -172,9 +174,16 @@ public class HomeActivity extends AppCompatActivity {
 
 
     private void fetchData() {
+        progress=new ProgressDialog(this);
+        progress.setMessage("Downloading Music");
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setIndeterminate(true);
+        progress.setProgress(0);
+
         StringRequest lFetchData = new StringRequest(Request.Method.GET, ConfigFile.GET_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String jsonData) {
+                progress.show();
                 parseJson(jsonData);
                 Toast.makeText(getApplicationContext(), "" + jsonData, Toast.LENGTH_LONG).show();
             }
@@ -187,7 +196,7 @@ public class HomeActivity extends AppCompatActivity {
         });
         RequestQueue lRequestQueue = Volley.newRequestQueue(this);
         lRequestQueue.add(lFetchData);
-
+  progress.dismiss();
     }
 
     private void parseJson(String jsonData) {

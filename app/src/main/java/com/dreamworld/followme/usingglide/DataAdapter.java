@@ -2,7 +2,11 @@ package com.dreamworld.followme.usingglide;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.provider.ContactsContract;
+import android.view.MotionEvent;
+import android.support.v4.view.ScaleGestureDetectorCompat;
+import android.view.ScaleGestureDetector;
 import android.view.LayoutInflater;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -10,7 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
@@ -34,10 +39,13 @@ import static com.bumptech.glide.util.ByteArrayPool.get;
  */
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
-
+  /*  Matrix matrix = new Matrix();
+    Float scale = 1f;
+    ScaleGestureDetector SGD ;*/
     List<Datamodel> datamodels ;
     Context mContext ;
     private Datamodel dm;
+    int lastPosition = -1;
     private OnItemClickListener onItemClickListener;
   /*  public CardAdapter(String[] names, String[] urls, Bitmap[] images){
         super();
@@ -126,8 +134,23 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
                 onItemClickListener.onItemClick(dm);
             }
         };
-        holder.lMainImage.setOnClickListener(listener);
+       holder.lMainImage.setOnClickListener(listener);
         holder.lHeadImage.setOnClickListener(listener);
+        if(position >lastPosition) {
+
+            Animation animation = AnimationUtils.loadAnimation(mContext,
+                    R.anim.up_from_bottom);
+            holder.itemView.startAnimation(animation);
+            lastPosition = position;
+        }
+        else
+            {
+
+                Animation animation = AnimationUtils.loadAnimation(mContext,
+                        R.anim.up_from_bottom);
+                holder.itemView.startAnimation(animation);
+                lastPosition = position;
+            }
     }
 
 
@@ -138,6 +161,8 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder {
         ImageView lHeadImage;
+
+
         ImageView lMainImage;
         TextView lDate;
         ViewHolder(View itemView ) {
@@ -145,9 +170,30 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             lHeadImage = (ImageView)itemView.findViewById(R.id.home_head_image);
             lMainImage = (ImageView)itemView.findViewById(R.id.home_main_image);
             lDate =(TextView)itemView.findViewById(R.id.main_date_time);
+         // lMainImage.setImageMatrix(matrix );
+          //  SGD = new ScaleGestureDetector(mContext,new ScaleListener());
 
         }
     }
+
+ /*   private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener
+    {
+
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            scale = scale*detector.getScaleFactor();
+            scale = Math.max(0.1f,Math.min(scale,5f));
+            matrix.setScale(scale,scale);
+            return true;
+        }
+    }
+     public boolean onTouchEvent(MotionEvent event)
+     {
+         SGD.onTouchEvent(event);
+         return true ;
+     }*/
+
+
 
     private class MyGlideCacheListener implements GlideCacheListener {
 
