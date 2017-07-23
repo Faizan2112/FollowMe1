@@ -38,7 +38,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     List<Datamodel> datamodels ;
     Context mContext ;
     private Datamodel dm;
-
+    private OnItemClickListener onItemClickListener;
   /*  public CardAdapter(String[] names, String[] urls, Bitmap[] images){
         super();
         int check = urls.length -1;
@@ -51,6 +51,8 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             items.add(item);
         }
     }*/
+
+
 
   public DataAdapter(Context context, String[] name , String[] urls ,Bitmap[] images)
   {
@@ -118,7 +120,16 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }*/
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemClickListener.onItemClick(dm);
+            }
+        };
+        holder.lMainImage.setOnClickListener(listener);
+        holder.lHeadImage.setOnClickListener(listener);
     }
+
 
     @Override
     public int getItemCount() {
@@ -153,4 +164,13 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             //Toast.makeText(mContext,"sfsd"+e, LENGTH_LONG).show();
         }
     }
+
+    public OnItemClickListener getOnItemClickListener() {
+        return onItemClickListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
 }
