@@ -16,10 +16,12 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.ImageView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -28,7 +30,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
 import com.dreamworld.followme.Config;
 import com.dreamworld.followme.R;
 import com.dreamworld.followme.fetchcchedata.DataAdapterCache;
@@ -37,15 +38,15 @@ import com.dreamworld.followme.testcode.NetworkUtill;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import android.view.ScaleGestureDetector;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Queue;
-import java.util.concurrent.ExecutionException;
+import java.util.Random;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
+    private Button mDown;
     private RecyclerView mRecyclerView;
     ProgressDialog progress;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -68,16 +69,19 @@ public class HomeActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
+        mDown = (Button) findViewById(R.id.download);
+        mDown.setOnClickListener(this);
         getConnectivityStatusString(this);
         // fetchData();
         //showData();
 //        Bitmap b= loadImageFromStorage(String path, String name)
 //        ImageView img=(ImageView)findViewById(R.id.your_image_id);
 //        img.setImageBitmap(b);
-         verifyStoragePermissions(this) ;
 
+        verifyStoragePermissions(this);
     }
+
+
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have read or write permission
         int writePermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -94,7 +98,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-
     public String getConnectivityStatusString(Context context) {
         int conn = NetworkUtill.getConnectivityStatus(context);
         String status = null;
@@ -104,7 +107,7 @@ public class HomeActivity extends AppCompatActivity {
 
             //     Snackbar.make(this,)
             //       Toast.makeText(this,""+status,Toast.LENGTH_LONG ).show();
-            //       fetchData();
+            fetchData();
 
         } else if (conn == NetworkUtill.TYPE_MOBILE) {
             status = "Mobile data enabled";
@@ -152,29 +155,9 @@ public class HomeActivity extends AppCompatActivity {
         alert.show();
     }
 
-    private void fetchCacheData() {
-        //String url = GlideUtils.getCache(getApplication().getApplicationContext(),ConfigFile.GET_URL);
-        StringRequest lFetchData = new StringRequest(Request.Method.GET, ConfigFile.GET_URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String jsonData) {
-                parseCacheJson(jsonData);
-                Toast.makeText(getApplicationContext(), "" + jsonData, Toast.LENGTH_LONG).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Toast.makeText(getApplicationContext(), "" + error.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-        RequestQueue lRequestQueue = Volley.newRequestQueue(this);
-        lRequestQueue.add(lFetchData);
-
-    }
-
 
     private void fetchData() {
-        progress=new ProgressDialog(this);
+        progress = new ProgressDialog(this);
         progress.setMessage("Downloading Music");
         progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progress.setIndeterminate(true);
@@ -196,7 +179,7 @@ public class HomeActivity extends AppCompatActivity {
         });
         RequestQueue lRequestQueue = Volley.newRequestQueue(this);
         lRequestQueue.add(lFetchData);
-  progress.dismiss();
+        progress.dismiss();
     }
 
     private void parseJson(String jsonData) {
@@ -222,20 +205,34 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Datamodel item) {
                 Toast.makeText(HomeActivity.this, item.getmUrls(), Toast.LENGTH_LONG).show();
-               // ContextWrapper cw = new ContextWrapper(HomeActivity.this);
+                // ContextWrapper cw = new ContextWrapper(HomeActivity.this);
                 // path to /data/data/yourapp/app_data/imageDir
+                // createing directory for downloading
 
-                String name_="foldername"; //Folder name in device android/data/
-               // File directory = cw.getDir(name_, Context.MODE_PRIVATE);
-               // File path =Environment.getExternalStorageDirectory();
+
+                final int random = new Random().nextInt(61) + 20;
+                String name_ = "foldername" + random;
+                String dirName = Environment.getExternalStorageDirectory().getPath()
+                        + "/followme/" + random;
+                File f = new File(dirName);
+                File direct = new File(Environment.getExternalStorageDirectory() + "/Download/followme", name_);
+
+                if (!direct.exists() || !f.exists()) {
+                    File wallpaperDirectory = new File("/sdcard/Download/followme/", name_);
+                    File wallpaperDirectory1 = new File(dirName);
+                    wallpaperDirectory.getParentFile().mkdirs();
+                    wallpaperDirectory1.mkdirs();
+                } //Folder name in device android/data/
+                // File directory = cw.getDir(name_, Context.MODE_PRIVATE);
+                // File path =Environment.getExternalStorageDirectory();
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), name_);
-                new DownloadTask(HomeActivity.this,file,"downloading").execute(item.getmUrls());
+                new DownloadTask(HomeActivity.this, direct, "downloading").execute(item.getmUrls());
                 //dt.execute();
-              //  downloadBitmap = Glide.with(HomeActivity.this).load(response).asBitmap().into(-1,-1).get();
-             //   saveToInternalStrorage(downloadBitmap,getApplicationContext(),"faizn");
+                //  downloadBitmap = Glide.with(HomeActivity.this).load(response).asBitmap().into(-1,-1).get();
+                //   saveToInternalStrorage(downloadBitmap,getApplicationContext(),"faizn");
 
-                    // cant use thread here for accesing ui data
-                    // we have run this tast in bacground to dowload
+                // cant use thread here for accesing ui data
+                // we have run this tast in bacground to dowload
 
 //                Queue q = new RequestQueue(sr);
 
@@ -268,11 +265,11 @@ public class HomeActivity extends AppCompatActivity {
         ContextWrapper cw = new ContextWrapper(context);
         // path to /data/data/yourapp/app_data/imageDir
 
-        String name_="foldername"; //Folder name in device android/data/
+        String name_ = "foldername"; //Folder name in device android/data/
         File directory = cw.getDir(name_, Context.MODE_PRIVATE);
 
         // Create imageDir
-        File mypath=new File(directory,name);
+        File mypath = new File(directory, name);
 
         FileOutputStream fos = null;
         try {
@@ -291,30 +288,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
 
-    private void parseCacheJson(String jsonData) {
-        try {
-            JSONObject jsonObject = new JSONObject(jsonData);
-            JSONArray array = jsonObject.getJSONArray(Config.TAG_JSON_ARRAY);
-
-            mConfigFile = new ConfigFile(array.length());
-
-            for (int i = 0; i <= array.length(); i++) {
-                JSONObject fetchedData = array.getJSONObject(i);
-                ConfigFile.cNames[i] = getName(fetchedData);
-                ConfigFile.cUrl[i] = getURL(fetchedData);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } finally {
-            mRecyclerViewAdapter = new DataAdapterCache(this, ConfigFile.cNames, ConfigFile.cUrl, ConfigFile.cImage);
-            mRecyclerView.setAdapter(mRecyclerViewAdapter);
-
-        }
-        mRecyclerViewAdapter = new DataAdapterCache(this, ConfigFile.cNames, ConfigFile.cUrl, ConfigFile.cImage);
-        mRecyclerView.setAdapter(mRecyclerViewAdapter);
-
-    }
 
     private String getName(JSONObject fetchedData) {
         String name = null;
@@ -336,20 +309,27 @@ public class HomeActivity extends AppCompatActivity {
         }
         return url;
     }
-    public Bitmap loadImageFromStorage(String path, String name)
-    {
+
+    public Bitmap loadImageFromStorage(String path, String name) {
         Bitmap b;
-        String name_="foldername";
+        String name_ = "foldername";
         try {
-            File f=new File(path, name_);
+            File f = new File(path, name_);
             b = BitmapFactory.decodeStream(new FileInputStream(f));
             return b;
-        }
-        catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.download) {
+            Intent i = new Intent(HomeActivity.this, DownloadActiviy.class);
+            startActivity(i);
+
+        }
     }
 
     /** Retrieve your image from device and set to imageview **/

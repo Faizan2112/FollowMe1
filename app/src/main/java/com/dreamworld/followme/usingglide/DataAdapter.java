@@ -116,7 +116,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
             GlideUtils.cacheImage(String.valueOf(dm.getmUrls()), mContext, new MyGlideCacheListener());
         Glide.with(mContext).load(GlideUtils.getCache(mContext, String.valueOf(dm.getmUrls()))).transform(new CircleTransform(mContext)).into(holder.lHeadImage);
 
-        Glide.with(mContext).load(GlideUtils.getCache(mContext, String.valueOf(dm.getmUrls()))).into(holder.lMainImage);
+        Glide.with(mContext).load(GlideUtils.getCache(mContext, String.valueOf(dm.getmUrls()))).centerCrop().into(holder.lMainImage);
 
             /*      FutureTarget<File> future = Glide.with(mContext)
                 .load(dm.getmUrls())
@@ -139,7 +139,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         if(position >lastPosition) {
 
             Animation animation = AnimationUtils.loadAnimation(mContext,
-                    R.anim.up_from_bottom);
+                    R.anim.bottom_from_up);
             holder.itemView.startAnimation(animation);
             lastPosition = position;
         }
